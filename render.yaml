@@ -58,7 +58,7 @@ services:
       - key: MAX_FILE_SIZE
         value: 5242880
       - key: CLIENT_URL
-        sync: false # Set this manually after frontend is deployed
+        value: http://localhost:3000
 
   # Frontend Service
   - type: web
@@ -70,9 +70,9 @@ services:
     staticPublishPath: client/build
     envVars:
       - key: REACT_APP_API_URL
-        sync: false # Set to your backend URL + /api
+        value: http://localhost:5000/api
       - key: REACT_APP_SOCKET_URL
-        sync: false # Set to your backend URL
+        value: http://localhost:5000
     routes:
       - type: rewrite
         source: /*
