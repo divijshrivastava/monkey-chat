@@ -1,0 +1,126 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: chat-postgres
+    environment:
+      POSTGRES_DB: chatapp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: chat-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chat-backend
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: chatapp
+      DB_USER: postgres
+      DB_PASSWORD: postgres123
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: your_jwt_secret_change_in_production
+      JWT_EXPIRES_IN: 7d
+      UPLOAD_DIR: ./uploads
+      MAX_FILE_SIZE: 5242880
+      CLIENT_URL: http://localhost:3000
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Uncomment to enable multiple backend instances with nginx load balancing
+  # backend-2:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     NODE_ENV: production
+  #     PORT: 5000
+  #     DB_HOST: postgres
+  #     DB_PORT: 5432
+  #     DB_NAME: chatapp
+  #     DB_USER: postgres
+  #     DB_PASSWORD: postgres123
+  #     REDIS_HOST: redis
+  #     REDIS_PORT: 6379
+  #     JWT_SECRET: your_jwt_secret_change_in_production
+  #     JWT_EXPIRES_IN: 7d
+  #     UPLOAD_DIR: ./uploads
+  #     MAX_FILE_SIZE: 5242880
+  #     CLIENT_URL: http://localhost:3000
+  #   volumes:
+  #     - ./uploads:/app/uploads
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: http://localhost:5001/api
+        REACT_APP_SOCKET_URL: http://localhost:5001
+    container_name: chat-frontend
+    environment:
+      REACT_APP_API_URL: http://localhost:5001/api
+      REACT_APP_SOCKET_URL: http://localhost:5001
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # Nginx load balancer (uncomment when using multiple backend instances)
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: chat-nginx
+  #   ports:
+  #     - "5000:80"
+  #   volumes:
+  #     - ./nginx-lb.conf:/etc/nginx/nginx.conf:ro
+  #   depends_on:
+  #     - backend
+  #     - backend-2
+  #   restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:

@@ -1,0 +1,38 @@
+{
+  "name": "scalable-chat-app",
+  "version": "1.0.0",
+  "description": "A scalable chat application supporting millions of concurrent users",
+  "main": "server/index.js",
+  "scripts": {
+    "server": "nodemon server/index.js",
+    "cluster": "node server/cluster.js",
+    "client": "cd client && npm start",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "cd client && npm run build",
+    "start": "node server/index.js",
+    "migrate": "node server/database/migrate.js"
+  },
+  "keywords": ["chat", "websocket", "scalable", "real-time"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.6.1",
+    "@socket.io/redis-adapter": "^8.2.1",
+    "pg": "^8.11.3",
+    "redis": "^4.6.7",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "multer": "^1.4.5-lts.1",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "uuid": "^9.0.1",
+    "compression": "^1.7.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "concurrently": "^8.2.2"
+  }
+}

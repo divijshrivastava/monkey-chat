@@ -1,0 +1,91 @@
+# Render Blueprint Configuration
+# This file automates the deployment of your chat app on Render.com
+
+services:
+  # Backend Service
+  - type: web
+    name: chat-backend
+    runtime: node
+    repo: https://github.com/YOUR_USERNAME/YOUR_REPO.git # Update this!
+    buildCommand: npm install
+    startCommand: node server/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: DB_HOST
+        fromDatabase:
+          name: chat-postgres
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: chat-postgres
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: chat-postgres
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: chat-postgres
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: chat-postgres
+          property: password
+      - key: REDIS_HOST
+        fromDatabase:
+          name: chat-redis
+          property: host
+      - key: REDIS_PORT
+        fromDatabase:
+          name: chat-redis
+          property: port
+      - key: REDIS_PASSWORD
+        fromDatabase:
+          name: chat-redis
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: UPLOAD_DIR
+        value: ./uploads
+      - key: MAX_FILE_SIZE
+        value: 5242880
+      - key: CLIENT_URL
+        sync: false # Set this manually after frontend is deployed
+
+  # Frontend Service
+  - type: web
+    name: chat-frontend
+    runtime: static
+    repo: https://github.com/YOUR_USERNAME/YOUR_REPO.git # Update this!
+    buildCommand: cd client && npm install && npm run build
+    staticPublishPath: client/build
+    envVars:
+      - key: REACT_APP_API_URL
+        sync: false # Set to your backend URL + /api
+      - key: REACT_APP_SOCKET_URL
+        sync: false # Set to your backend URL
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+databases:
+  # PostgreSQL Database
+  - name: chat-postgres
+    databaseName: chatapp
+    user: chatuser
+    plan: free
+    ipAllowList: []
+
+  # Redis Cache
+  - name: chat-redis
+    plan: free
+    maxmemoryPolicy: noeviction
+    ipAllowList: []
