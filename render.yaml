@@ -7,6 +7,8 @@ services:
     name: chat-backend
     runtime: node
     repo: https://github.com/divijshrivastava/monkey-chat.git
+    region: oregon
+    plan: free
     buildCommand: npm install
     startCommand: node server/index.js
     healthCheckPath: /health
@@ -63,6 +65,7 @@ services:
     name: chat-frontend
     runtime: static
     repo: https://github.com/divijshrivastava/monkey-chat.git
+    region: oregon
     buildCommand: cd client && npm install && npm run build
     staticPublishPath: client/build
     envVars:
