@@ -50,7 +50,7 @@ services:
       - key: MAX_FILE_SIZE
         value: 5242880
       - key: CLIENT_URL
-        value: http://localhost:3000
+        value: https://chat-frontend-l6bo.onrender.com
 
   # Frontend Service
   - type: web
@@ -61,9 +61,9 @@ services:
     staticPublishPath: client/build
     envVars:
       - key: REACT_APP_API_URL
-        value: http://localhost:5000/api
+        value: https://chat-backend-311n.onrender.com/api
       - key: REACT_APP_SOCKET_URL
-        value: http://localhost:5000
+        value: https://chat-backend-311n.onrender.com
     routes:
       - type: rewrite
         source: /*
