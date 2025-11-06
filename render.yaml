@@ -49,7 +49,6 @@ services:
           property: password
       - key: JWT_SECRET
         generateValue: true
-        sync: false
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: UPLOAD_DIR
