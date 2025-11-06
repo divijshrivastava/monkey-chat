@@ -37,10 +37,14 @@ services:
         fromDatabase:
           name: chat-postgres
           property: password
-      - key: REDIS_URL
-        fromDatabase:
-          name: chat-redis
-          property: connectionString
+      # NOTE: REDIS_URL must be manually linked in Render dashboard
+      # The fromDatabase syntax only works for Postgres databases, not Key-Value stores
+      # Go to: https://dashboard.render.com/web/srv-d46egkpr0fns73auq9o0/env
+      # Link REDIS_URL to the Redis Key-Value store (chat-redis, ID: red-d46gskngi27c739tr9qg)
+      # NOT to a Postgres database. Use property: "connectionString"
+      # REDIS_URL will be set manually in the Render dashboard
+      # - key: REDIS_URL
+      #   (manually set in Render dashboard - cannot use fromDatabase for Key-Value stores)
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRES_IN

@@ -12,6 +12,8 @@ const routes = require('./routes');
 const { socketAuthMiddleware } = require('./middleware/auth');
 const SocketHandler = require('./socket/socketHandler');
 const setupSocketAdapter = require('./config/socketAdapter');
+const { pool } = require('./database/db');
+const fs = require('fs');
 
 const app = express();
 const server = http.createServer(app);
@@ -31,6 +33,9 @@ const io = new Server(server, {
 if (process.env.NODE_ENV === 'production') {
   setupSocketAdapter(io).catch(console.error);
 }
+
+// Trust proxy (required for Render and other reverse proxies)
+app.set('trust proxy', true);
 
 // Middleware
 app.use(helmet({
@@ -85,10 +90,31 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Not found' });
 });
 
+// Run database migrations on startup
+async function runMigrations() {
+  try {
+    console.log('Checking database schema...');
+    const schemaPath = path.join(__dirname, 'database', 'schema.sql');
+    const schema = fs.readFileSync(schemaPath, 'utf8');
+    
+    // Run migration (CREATE TABLE IF NOT EXISTS ensures idempotency)
+    await pool.query(schema);
+    console.log('✓ Database schema verified');
+  } catch (error) {
+    console.error('Database migration error:', error.message);
+    // Don't exit - allow server to start even if migration fails
+    // This prevents blocking if tables already exist
+  }
+}
+
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
-  console.log(`
+// Start server after migrations
+async function startServer() {
+  await runMigrations();
+  
+  server.listen(PORT, () => {
+    console.log(`
 ╔════════════════════════════════════════╗
 ║   Chat Server Running Successfully     ║
 ╠════════════════════════════════════════╣
@@ -96,8 +122,11 @@ server.listen(PORT, () => {
 ║   Environment: ${(process.env.NODE_ENV || 'development').padEnd(23)} ║
 ║   Time: ${new Date().toLocaleTimeString().padEnd(30)} ║
 ╚════════════════════════════════════════╝
-  `);
-});
+    `);
+  });
+}
+
+startServer().catch(console.error);
 
 // Graceful shutdown
 process.on('SIGTERM', () => {

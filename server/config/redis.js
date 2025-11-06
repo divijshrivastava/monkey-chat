@@ -1,10 +1,24 @@
 const redis = require('redis');
 require('dotenv').config();
 
+// Validate REDIS_URL if provided
+let redisUrl = process.env.REDIS_URL;
+if (redisUrl) {
+  // Check if URL has valid Redis protocol
+  if (!redisUrl.startsWith('redis://') && !redisUrl.startsWith('rediss://')) {
+    console.error('❌ Invalid REDIS_URL protocol. Expected redis:// or rediss://');
+    console.error(`   Current REDIS_URL value: ${redisUrl.substring(0, 50)}...`);
+    console.error('   This usually means REDIS_URL is linked to the wrong database type.');
+    console.error('   Please check your Render dashboard and ensure REDIS_URL is linked to the Redis Key-Value store, not a Postgres database.');
+    // Fall back to individual properties if available
+    redisUrl = null;
+  }
+}
+
 // Support both REDIS_URL (production) and individual host/port/password (development)
-const redisConfig = process.env.REDIS_URL
+const redisConfig = redisUrl
   ? {
-      url: process.env.REDIS_URL,
+      url: redisUrl,
       socket: {
         reconnectStrategy: (retries) => {
           if (retries > 10) {
