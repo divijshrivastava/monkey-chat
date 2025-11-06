@@ -6,7 +6,7 @@ services:
   - type: web
     name: chat-backend
     runtime: node
-    repo: https://github.com/YOUR_USERNAME/YOUR_REPO.git # Update this!
+    repo: https://github.com/divijshrivastava/monkey-chat.git
     buildCommand: npm install
     startCommand: node server/index.js
     healthCheckPath: /health
@@ -63,7 +63,7 @@ services:
   - type: web
     name: chat-frontend
     runtime: static
-    repo: https://github.com/YOUR_USERNAME/YOUR_REPO.git # Update this!
+    repo: https://github.com/divijshrivastava/monkey-chat.git
     buildCommand: cd client && npm install && npm run build
     staticPublishPath: client/build
     envVars:
