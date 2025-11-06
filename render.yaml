@@ -87,5 +87,4 @@ databases:
   # Redis Cache
   - name: chat-redis
     plan: free
-    maxmemoryPolicy: noeviction
     ipAllowList: []
