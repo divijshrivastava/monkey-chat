@@ -1,7 +1,7 @@
 {
-  "name": "scalable-chat-app",
+  "name": "monkey-chat",
   "version": "1.0.0",
-  "description": "A scalable chat application supporting millions of concurrent users",
+  "description": "Monkey Chat - A scalable real-time chat application supporting millions of concurrent users",
   "main": "server/index.js",
   "scripts": {
     "server": "nodemon server/index.js",

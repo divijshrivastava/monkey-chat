@@ -1,8 +1,8 @@
-# Chat Application Architecture
+# Monkey Chat Architecture
 
 ## System Overview
 
-The chat application is built using a microservices-inspired architecture with the following main components:
+Monkey Chat is built using a microservices-inspired architecture with the following main components:
 
 ### Components
 

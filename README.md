@@ -1,4 +1,4 @@
-# Scalable Chat Application
+# Monkey Chat
 
 A production-ready, real-time chat application built with Node.js, React, PostgreSQL, and Redis. Designed to handle millions of concurrent users with horizontal scaling capabilities.
 

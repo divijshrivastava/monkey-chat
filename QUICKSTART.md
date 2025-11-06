@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-Get your chat app running in 5 minutes!
+Get Monkey Chat running in 5 minutes!
 
 ## Option 1: Docker (Easiest) 🐳
 

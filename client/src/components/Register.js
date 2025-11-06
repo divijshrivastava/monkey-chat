@@ -28,7 +28,7 @@ function Register({ onRegister }) {
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <h1>Chat App</h1>
+        <h1>Monkey Chat</h1>
         <h2>Register</h2>
         {error && <div className="error">{error}</div>}
         <form onSubmit={handleSubmit}>
