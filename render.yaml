@@ -37,18 +37,10 @@ services:
         fromDatabase:
           name: chat-postgres
           property: password
-      - key: REDIS_HOST
+      - key: REDIS_URL
         fromDatabase:
           name: chat-redis
-          property: host
-      - key: REDIS_PORT
-        fromDatabase:
-          name: chat-redis
-          property: port
-      - key: REDIS_PASSWORD
-        fromDatabase:
-          name: chat-redis
-          property: password
+          property: connectionString
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRES_IN
