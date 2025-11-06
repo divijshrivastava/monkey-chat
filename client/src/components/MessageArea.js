@@ -165,6 +165,18 @@ function MessageArea({ conversation, currentUser, onlineUsers, onBack }) {
     return participant && onlineUsers.has(participant.id);
   };
 
+  const getImageUrl = (fileUrl) => {
+    if (!fileUrl) return '';
+    // If fileUrl is already a full URL, return it
+    if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
+      return fileUrl;
+    }
+    // Get base URL from environment or use socket URL (which is the base URL)
+    const baseUrl = process.env.REACT_APP_SOCKET_URL || 
+                   (process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000');
+    return `${baseUrl}${fileUrl}`;
+  };
+
   return (
     <div className="message-area">
       <div className="message-area-header">
@@ -208,8 +220,12 @@ function MessageArea({ conversation, currentUser, onlineUsers, onBack }) {
                 {message.message_type === 'image' ? (
                   <div className="message-image">
                     <img
-                      src={`http://localhost:5000${message.file_url}`}
+                      src={getImageUrl(message.file_url)}
                       alt={message.file_name}
+                      onError={(e) => {
+                        console.error('Failed to load image:', message.file_url);
+                        e.target.style.display = 'none';
+                      }}
                     />
                   </div>
                 ) : (
